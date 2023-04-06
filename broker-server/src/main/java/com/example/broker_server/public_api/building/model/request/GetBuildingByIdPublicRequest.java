@@ -1,6 +1,6 @@
 package com.example.broker_server.public_api.building.model.request;
 
-import com.example.broker_server.public_api.handler.model.GenericPublicRequest;
+import com.example.broker_server.public_api.handler.model.request.GenericPublicRequest;
 
 public class GetBuildingByIdPublicRequest extends GenericPublicRequest {
 

@@ -1,6 +1,6 @@
 package com.example.broker_client.public_api.common.model;
 
-public class GenericPublicDto {
+public class GenericPublicRequest {
 
     String token;
     ActionType actionType;

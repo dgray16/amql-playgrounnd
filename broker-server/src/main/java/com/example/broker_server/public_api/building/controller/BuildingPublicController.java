@@ -1,7 +1,8 @@
 package com.example.broker_server.public_api.building.controller;
 
-import com.example.broker_server.public_api.building.model.dto.BuildingPublicDto;
+import com.example.broker_server.public_api.building.model.request.BuildingPublicDto;
 import com.example.broker_server.public_api.building.model.request.GetBuildingByIdPublicRequest;
+import com.example.broker_server.public_api.building.model.request.UpdateBuildingPublicRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
 
@@ -21,8 +22,9 @@ public class BuildingPublicController {
         return new BuildingPublicDto("Building id = " + request.getBuildingId());
     }
 
-    public boolean postAction() {
-        System.out.println("ACTION performed");
+    public boolean postAction(byte[] json) throws IOException {
+        UpdateBuildingPublicRequest request = objectMapper.readValue(json, UpdateBuildingPublicRequest.class);
+        System.out.println("ACTION performed on: " + request.getNewName());
         return true;
     }
 

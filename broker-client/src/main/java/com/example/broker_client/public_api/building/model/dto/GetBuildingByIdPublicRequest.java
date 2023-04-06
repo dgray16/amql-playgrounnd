@@ -1,8 +1,8 @@
 package com.example.broker_client.public_api.building.model.dto;
 
-import com.example.broker_client.public_api.common.model.GenericPublicDto;
+import com.example.broker_client.public_api.common.model.GenericPublicRequest;
 
-public class GetBuildingByIdPublicRequest extends GenericPublicDto {
+public class GetBuildingByIdPublicRequest extends GenericPublicRequest {
 
     Long buildingId;
 

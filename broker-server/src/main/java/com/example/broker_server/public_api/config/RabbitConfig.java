@@ -1,5 +1,6 @@
 package com.example.broker_server.public_api.config;
 
+import com.example.broker_server.public_api.common.Constant;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
@@ -20,29 +21,40 @@ public class RabbitConfig {
 
     /** {@link Queue} that stores incoming requests to server app */
     @Bean
-    Queue request() {
-        return new Queue("public-request");
+    Queue toServer() {
+        return new Queue(Constant.CLIENT_1_REQUEST_TO_SERVER);
     }
 
-    /* TODO create queue, binding in runtime? 1 queue per client?  */
-    /* to read from 1 queue we can use Stream, but messages will stay there */
     /** {@link Queue} that stores outgoing events from server app */
     @Bean
-    Queue event() {
-        /*Map<String, Object> params = Map.of("x-message-ttl", Duration.ofSeconds(30L).toMillis());
-        return new Queue("public-event", true, false, false, params);*/
-
-        return new Queue("public-event");
+    Queue responseFromServer() {
+        return new Queue(Constant.CLIENT_1_RESPONSE_FROM_SERVER);
     }
 
     @Bean
-    DirectExchange exchange() {
-        return new DirectExchange("public-exchange");
+    DirectExchange requestExchange() {
+        return new DirectExchange(Constant.CLIENT_1_REQUEST_RESPONSE_EXCHANGE);
     }
 
     @Bean
-    Binding binding() {
-        return BindingBuilder.bind(request()).to(exchange()).with("public-request");
+    Binding requestBinding() {
+        return BindingBuilder.bind(toServer()).to(requestExchange()).with("");
+    }
+
+
+    @Bean
+    Queue eventFromServer() {
+        return new Queue(Constant.CLIENT_1_EVENT_FROM_SERVER);
+    }
+
+    @Bean
+    DirectExchange eventExchange() {
+        return new DirectExchange(Constant.CLIENT_1_EVENT_EXCHANGE);
+    }
+
+    @Bean
+    Binding eventBinding() {
+        return BindingBuilder.bind(eventFromServer()).to(eventExchange()).with("");
     }
 
     @Bean

@@ -1,4 +1,4 @@
-package com.example.broker_server.public_api.handler.model;
+package com.example.broker_server.public_api.handler.model.request;
 
 public enum RequestActionType {
 

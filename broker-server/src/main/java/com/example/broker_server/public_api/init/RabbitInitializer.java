@@ -1,5 +1,6 @@
 package com.example.broker_server.public_api.init;
 
+import com.example.broker_server.public_api.common.Constant;
 import com.example.broker_server.public_api.init.model.CreateRabbitPermissionRequest;
 import com.example.broker_server.public_api.init.model.CreateRabbitUserRequest;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -9,6 +10,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.Duration;
 
+/** <a href="https://rawcdn.githack.com/rabbitmq/rabbitmq-server/v3.11.13/deps/rabbitmq_management/priv/www/api/index.html">RabbitMQ HTTP API</a> */
 @Component
 public class RabbitInitializer implements ApplicationListener<ApplicationReadyEvent> {
 
@@ -20,38 +22,46 @@ public class RabbitInitializer implements ApplicationListener<ApplicationReadyEv
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        // TODO create user if not exists
-        // TODO create user limits
-        createClientUser();
-        createClientUserPermissions();
+        createClient1User();
+        createClient1UserPermissions();
+
+        createClient2User();
     }
 
-    private void createClientUser() {
-        CreateRabbitUserRequest createUserRequest = new CreateRabbitUserRequest("secret", "public-client");
+    private void createClient1User() {
+        CreateRabbitUserRequest createUserRequest = new CreateRabbitUserRequest("secret", Constant.CLIENT_1);
 
         webClient
                 .put()
-                .uri("/users/client-prod")
+                .uri("/users/" + Constant.CLIENT_1)
                 .bodyValue(createUserRequest)
                 .retrieve()
                 .toEntity(String.class)
                 .block(Duration.ofSeconds(10L));
-
-        // TODO handle error
     }
 
-    private void createClientUserPermissions() {
-        CreateRabbitPermissionRequest request = new CreateRabbitPermissionRequest("", "public-exchange", "public-.*");
+    private void createClient2User() {
+        CreateRabbitUserRequest createUserRequest = new CreateRabbitUserRequest("secret", "client-2");
 
         webClient
                 .put()
-                .uri(x -> x.path("/permissions").pathSegment("/").path("/client-prod").build())
+                .uri("/users/client-2")
+                .bodyValue(createUserRequest)
+                .retrieve()
+                .toEntity(String.class)
+                .block(Duration.ofSeconds(10L));
+    }
+
+    private void createClient1UserPermissions() {
+        CreateRabbitPermissionRequest request = new CreateRabbitPermissionRequest("", "public-exchange", "^client-1-.*");
+
+        webClient
+                .put()
+                .uri(x -> x.path("/permissions").pathSegment("/").path("/" + Constant.CLIENT_1).build())
                 .bodyValue(request)
                 .retrieve()
                 .toEntity(String.class)
                 .block(Duration.ofSeconds(10L));
-
-        // TODO handle error
     }
 
 }

@@ -1,4 +1,4 @@
-package com.example.broker_server.public_api.handler.model;
+package com.example.broker_server.public_api.common.model;
 
 public abstract class GenericPublicEvent {
 
@@ -8,4 +8,7 @@ public abstract class GenericPublicEvent {
         this.eventType = eventType;
     }
 
+    public ServerEventType getEventType() {
+        return eventType;
+    }
 }

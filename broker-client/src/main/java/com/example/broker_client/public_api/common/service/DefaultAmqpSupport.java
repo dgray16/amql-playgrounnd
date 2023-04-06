@@ -10,8 +10,10 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public abstract class DefaultAmqpSupport {
+
 
     private final RabbitTemplate template;
     private final ObjectMapper objectMapper;
@@ -22,22 +24,32 @@ public abstract class DefaultAmqpSupport {
     }
 
     protected <T> T fireAndReceive(Object dto, ParameterizedTypeReference<T> responseType) {
+        Supplier<T> supplier = () -> Optional
+                .ofNullable(template.convertSendAndReceiveAsType(
+                        "client-1-request-response-exchange", null, generateMessage(dto), responseType
+                ))
+                .orElseThrow();
+
+        return catchServerException(supplier);
+    }
+
+    private <T> T catchServerException(Supplier<T> supplier) {
         try {
-            return Optional
-                    .ofNullable(template.convertSendAndReceiveAsType(
-                            "public-exchange", "public-request", generateMessage(dto), responseType
-                    ))
-                    .orElseThrow();
+            return supplier.get();
         } catch (Exception e) {
             throw new RuntimeException("Server application error", e);
         }
     }
 
-    private Message generateMessage(Object dto) throws JsonProcessingException {
-        return  MessageBuilder
-                .withBody(objectMapper.writeValueAsBytes(dto))
-                .andProperties(MessagePropertiesBuilder.newInstance().setContentType(MediaType.APPLICATION_JSON_VALUE).build())
-                .build();
+    private Message generateMessage(Object dto) {
+        try {
+            return MessageBuilder
+                    .withBody(objectMapper.writeValueAsBytes(dto))
+                    .andProperties(MessagePropertiesBuilder.newInstance().setContentType(MediaType.APPLICATION_JSON_VALUE).build())
+                    .build();
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Message cannot be constructed");
+        }
     }
 
 }

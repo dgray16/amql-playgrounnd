@@ -1,7 +1,8 @@
 package com.example.broker_server.public_api.handler.controller;
 
 import com.example.broker_server.public_api.building.controller.BuildingPublicController;
-import com.example.broker_server.public_api.handler.model.GenericPublicRequest;
+import com.example.broker_server.public_api.common.Constant;
+import com.example.broker_server.public_api.handler.model.request.GenericPublicRequest;
 import com.example.broker_server.public_api.handler.service.PublicTokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.amqp.core.Message;
@@ -27,7 +28,7 @@ public class ControllerHandler {
         this.objectMapper = objectMapper;
     }
 
-    @RabbitListener(queues = "public-request")
+    @RabbitListener(queues = Constant.CLIENT_1_REQUEST_TO_SERVER)
     public Object handle(Message message) {
         Object result = null;
 
@@ -40,10 +41,10 @@ public class ControllerHandler {
                 if (tokenService.valid(rpcDto.getToken())) {
                     Object response = switch (rpcDto.getActionType()) {
                         case GET_BUILDING -> buildingController.getBuilding(message.getBody());
-                        case POST_ACTION -> buildingController.postAction();
+                        case POST_ACTION -> buildingController.postAction(message.getBody());
                     };
 
-                    if (!(Objects.isNull(response))) {
+                    if (Objects.nonNull(response)) {
                         result = response;
                     }
                 }
