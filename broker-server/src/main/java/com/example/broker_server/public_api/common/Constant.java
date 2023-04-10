@@ -4,6 +4,8 @@ public final class Constant {
 
     private Constant() {}
 
+    public static final String NONE_TAG = "None";
+
     public static final String CLIENT_1 = "client-1";
     public static final String CLIENT_1_EVENT_EXCHANGE = "client-1-event-exchange";
     public static final String CLIENT_1_REQUEST_TO_SERVER = "client-1-request-to-server";

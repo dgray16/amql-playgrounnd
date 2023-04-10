@@ -29,7 +29,7 @@ public class RabbitInitializer implements ApplicationListener<ApplicationReadyEv
     }
 
     private void createClient1User() {
-        CreateRabbitUserRequest createUserRequest = new CreateRabbitUserRequest("secret", Constant.CLIENT_1);
+        CreateRabbitUserRequest createUserRequest = new CreateRabbitUserRequest("secret", Constant.NONE_TAG);
 
         webClient
                 .put()
@@ -41,7 +41,7 @@ public class RabbitInitializer implements ApplicationListener<ApplicationReadyEv
     }
 
     private void createClient2User() {
-        CreateRabbitUserRequest createUserRequest = new CreateRabbitUserRequest("secret", "client-2");
+        CreateRabbitUserRequest createUserRequest = new CreateRabbitUserRequest("secret", Constant.NONE_TAG);
 
         webClient
                 .put()
